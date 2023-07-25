@@ -10,6 +10,8 @@ def transform(txt:str) -> str:
     Transforms a given string into it's python-executable form
     """
     out = txt[:]
+    # i never do xor operations in a calculator
+    out.replace("^","**")
     for idx,char in enumerate(txt[1:]):
         # note: `txt[idx]` is the character before `char`
         if (txt[idx] != "*" and char == "("): 
@@ -23,16 +25,17 @@ def transform(txt:str) -> str:
     return out
 
 if __name__ == "__main__":
-    vars = dict()
+    _history = []
     while True:
-        user_in = input("> ")
+        _user_in = input("> ")
+        _history.append(_user_in)
         for key,val in vars.items():
-            user_in.replace(key,val)
+            _user_in.replace(key,val)
         # check if we need to exec code (setting variables, etc) or simply eval
-        if user_in.count("=")==1 or ";" in user_in:
-            exec(user_in)
+        if _user_in.count("=")==1 or ";" in user_in:
+            exec(_user_in)
         else:
-            user_in = transform(user_in)
-            out = eval(user_in)
-            print(out)
+            _user_in = transform(user_in)
+            _out = eval(_user_in)
+            print(_out)
 
