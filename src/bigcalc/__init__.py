@@ -20,13 +20,37 @@ def transform(txt:str) -> str:
     # i never do xor operations in a calculator
     out.replace("^","**")
     # allows range functionality... (e.g. 1..100 == range(1,101))
-    for count in out.count(".."):
-        idx = out.index("..")
-        try:
-            ... 
-        except Exception as e:
-            raise CalculatorException("Your range (`..`) failed")
+    try:
+        assert len(out.split("..")) == 2
+        first_part, second_part = map(list,out.split(".."))
+        first_digits, second_digits = "", ""
+        for char in first_part[::-1]:
+            if not char.isdigit():
+                first_digits = first_digits[::-1]
+                break
+            first_digits+=char
+            del first_part[-1]
+        for i in range(len(second_part)):
+            if not second_part[0].isdigit():
+                break
+            # elif idx == len(second_part)-1:
+            second_digits+=second_part[0]
+            del second_part[0]
+        insert = f"range({int(first_digits)},{1+int(second_digits)}) "
+        # they put humpty dumpty back together
+        out = " ".join([
+            "".join(first_part),
+            insert,
+            "".join(second_part)
+            ])
 
+    except AssertionError as e:
+        raise e
+    except Exception as e:
+        raise CalculatorException("Your range (`..`) failed")
+
+    out = out.strip()
+    
     for idx,char in enumerate(txt[1:]):
         # note: `txt[idx]` is the character before `char`
         if (txt[idx] != "*" and char == "("): 
@@ -39,18 +63,16 @@ def transform(txt:str) -> str:
             out = pt1 + "*" + pt2
     return out
 
-if __name__ == "__main__":
+def main():
     _history = []
     while True:
         _user_in = input("> ")
         _history.append(_user_in)
-        for key,val in vars.items():
-            _user_in.replace(key,val)
         # check if we need to exec code (setting variables, etc) or simply eval
-        if _user_in.count("=")==1 or ";" in user_in:
+        if _user_in.count("=")==1 or ";" in _user_in:
             exec(_user_in)
         else:
-            _user_in = transform(user_in)
+            _user_in = transform(_user_in)
             _out = eval(_user_in)
             print(_out)
 
